@@ -21,6 +21,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _subjectsController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _passwordController =TextEditingController();
 
   void _registerStudent() {
     if (_formKey.currentState!.validate()) {
@@ -32,6 +33,8 @@ class _RegisterPageState extends State<RegisterPage> {
         subjects: _subjectsController.text.trim().split(',').map((e) => e.trim()).toList(),
         email: _emailController.text.trim(),
         phone: _phoneController.text.trim(),
+        password: _passwordController.text,
+       
         profilePicture: "assets/student.png", // static asset
       );
 
@@ -63,8 +66,9 @@ class _RegisterPageState extends State<RegisterPage> {
               _buildTextField(_classNameController, "Class"),
               _buildTextField(_schoolNameController, "School Name"),
               _buildTextField(_subjectsController, "Subjects (comma separated)"),
+               _buildTextField(_phoneController, "Phone", keyboardType: TextInputType.phone),
               _buildTextField(_emailController, "Email", keyboardType: TextInputType.emailAddress),
-              _buildTextField(_phoneController, "Phone", keyboardType: TextInputType.phone),
+              _buildTextField(_passwordController, "Password"),
 
               const SizedBox(height: 24),
               ElevatedButton(

@@ -25,7 +25,7 @@ dev_dependencies:
 
 flutter_icons:
   image_path: "assets/logo.png"  # Path to your app icon
-  android : true
+  android : true 
 
 flutter_lints: ^5.0.0
 

@@ -7,6 +7,8 @@ class AuthController {
 
   late SharedPreferences _prefs;
 
+  get storageService => null;
+
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
   }

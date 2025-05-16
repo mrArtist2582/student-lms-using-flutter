@@ -7,6 +7,7 @@ class Student {
   final List<String>? subjects;
   final String? email;
   final String? phone;
+  String? password;
 
   Student({
     required this.name,
@@ -16,6 +17,7 @@ class Student {
     this.schoolName,
     this.subjects,
     this.email,
+    this.password,
     this.phone,
   });
 }

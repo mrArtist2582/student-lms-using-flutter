@@ -9,52 +9,73 @@ class DailyPlanScreen extends StatefulWidget {
 }
 
 class _DailyPlanScreenState extends State<DailyPlanScreen> {
-  // List to hold daily tasks
-  List<Map<String, dynamic>> tasks = [
-    {"task": "Complete Math Homework", "completed": false},
-    {"task": "Attend Science Class", "completed": false},
-    {"task": "Read English Chapter 3", "completed": false},
+  List<Map<String, dynamic>> studyPlan = [
+    {"task": "Math Homework", "duration": 15, "completed": false},
+    {"task": "Science Reading", "duration": 15, "completed": false},
+    {"task": "English Chapter 3 Review", "duration": 15, "completed": false},
   ];
 
-  // Method to toggle task completion
   void toggleTaskCompletion(int index) {
     setState(() {
-      tasks[index]['completed'] = !tasks[index]['completed'];
+      studyPlan[index]['completed'] = !studyPlan[index]['completed'];
     });
   }
 
-  // Method to show dialog for adding new task
+int get totalDuration =>
+    studyPlan.fold(0, (sum, task) => sum + (task['duration'] as int));
+
+int get completedDuration => studyPlan
+    .where((task) => task['completed'] == true)
+    .fold(0, (sum, task) => sum + (task['duration'] as int));
+
+
+  double get progress =>
+      totalDuration == 0 ? 0 : completedDuration / totalDuration;
+
   void _showAddTaskDialog() {
     final TextEditingController taskController = TextEditingController();
-    
+    final TextEditingController durationController = TextEditingController();
+
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: const Text("Add New Task"),
-          content: TextField(
-            controller: taskController,
-            decoration: const InputDecoration(
-              hintText: 'Enter task description',
-            ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: taskController,
+                decoration: const InputDecoration(
+                  hintText: 'Enter task description',
+                ),
+              ),
+              TextField(
+                controller: durationController,
+                decoration: const InputDecoration(
+                  hintText: 'Duration in minutes',
+                ),
+                keyboardType: TextInputType.number,
+              ),
+            ],
           ),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.pop(context); // Close the dialog without adding
-              },
+              onPressed: () => Navigator.pop(context),
               child: const Text("Cancel"),
             ),
             TextButton(
               onPressed: () {
-                if (taskController.text.isNotEmpty) {
+                if (taskController.text.isNotEmpty &&
+                    int.tryParse(durationController.text) != null) {
                   setState(() {
-                    tasks.add({
+                    studyPlan.add({
                       "task": taskController.text,
+                      "duration": int.parse(durationController.text),
                       "completed": false,
                     });
                   });
-                  Navigator.pop(context); // Close the dialog
+                  Navigator.pop(context);
                 }
               },
               child: const Text("Add"),
@@ -69,9 +90,8 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.indigo.shade50,
-
       appBar: AppBar(
-        title: const Text("Daily Plan",),
+        title: const Text("Daily 45-Min Study Plan"),
         backgroundColor: Colors.indigo.shade100,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -86,23 +106,50 @@ class _DailyPlanScreenState extends State<DailyPlanScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ListView.builder(
-          itemCount: tasks.length,
-          itemBuilder: (context, index) {
-            final task = tasks[index];
-            return ListTile(
-              onTap: () => toggleTaskCompletion(index),
-              tileColor: task['completed'] ? Colors.green.withOpacity(0.3) : null,
-              contentPadding: const EdgeInsets.symmetric(vertical: 12.0),
-              title: Text(
-                task['task'],
-                style: TextStyle(
-                  decoration: task['completed'] ? TextDecoration.lineThrough : null,
-                  color: task['completed'] ? Colors.green : Colors.black,
-                ),
+        child: Column(
+          children: [
+            Text(
+              "Total Planned Time: $totalDuration minutes",
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            LinearProgressIndicator(
+              value: progress,
+              backgroundColor: Colors.grey.shade300,
+              color: Colors.green,
+              minHeight: 8,
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: ListView.builder(
+                itemCount: studyPlan.length,
+                itemBuilder: (context, index) {
+                  final task = studyPlan[index];
+                  return ListTile(
+                    onTap: () => toggleTaskCompletion(index),
+                    tileColor: task['completed']
+                        ? Colors.green.withOpacity(0.3)
+                        : null,
+                    contentPadding:
+                        const EdgeInsets.symmetric(vertical: 12.0),
+                    title: Text(
+                      "${task['task']} (${task['duration']} mins)",
+                      style: TextStyle(
+                        decoration: task['completed']
+                            ? TextDecoration.lineThrough
+                            : null,
+                        color:
+                            task['completed'] ? Colors.green : Colors.black,
+                      ),
+                    ),
+                    trailing: task['completed']
+                        ? const Icon(Icons.check_circle, color: Colors.green)
+                        : null,
+                  );
+                },
               ),
-            );
-          },
+            ),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(

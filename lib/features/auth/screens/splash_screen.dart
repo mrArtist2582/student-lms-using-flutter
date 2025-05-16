@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:student_lms/routes/app_routes.dart';
-import 'package:student_lms/services/storage_service.dart';
+import 'package:student_lms/main.dart'; // to access authController
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -16,12 +16,12 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
 
     Future.delayed(const Duration(seconds: 2), () {
-      final storage = StorageService();
+      final isLoggedIn = authController.isLoggedIn(); // ✅ FIX: call the function
 
-      if (!storage.isLoggedIn) {
-        Navigator.of(context).pushReplacementNamed(AppRoutes.login);
+      if (isLoggedIn) {
+        Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard); // go to dashboard
       } else {
-        Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
+        Navigator.of(context).pushReplacementNamed(AppRoutes.login); // go to login
       }
     });
   }
@@ -32,16 +32,14 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Icon(Icons.school, size: 100, color: Theme.of(context).primaryColor),
             Text(
               "Student LMS",
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).primaryColor,
-              ),
-              
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).primaryColor,
+                  ),
             ),
           ],
         ),

@@ -2,11 +2,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class StorageService {
   static final StorageService _instance = StorageService._internal();
+
   late SharedPreferences _prefs;
 
-  factory StorageService() => _instance;
-
   StorageService._internal();
+
+  static StorageService get instance => _instance;
 
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
@@ -26,7 +27,7 @@ class StorageService {
 
   bool get hasSeenOnboarding => _prefs.getBool('onboardingSeen') ?? false;
 
-  // Questionnaire Answers (stored as comma-separated)
+  // Questionnaire Answers
   Future<void> saveAnswers(List<int> answers) async {
     await _prefs.setString('answers', answers.join(','));
   }

@@ -76,7 +76,6 @@ class DashboardScreen extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Dashboard'),
           backgroundColor: Colors.indigo.shade100,
-   
         ),
         body: LayoutBuilder(
           builder: (context, constraints) {
@@ -90,43 +89,49 @@ class DashboardScreen extends StatelessWidget {
                   Consumer<StudentProvider>(
                     builder: (context, studentProvider, _) {
                       final student = studentProvider.getStudent();
-                      return StudentProfileHeader(student: student);
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [StudentProfileHeader(student: student)],
+                      );
                     },
                   ),
                   const SizedBox(height: 24),
-                  Wrap(
-                    spacing: 16,
-                    runSpacing: 16,
-                    children: [
-                      DashboardCard(
-                        title: 'Questions',
-                        icon: Icons.quiz,
-                        routeName: '/questionnaire',
-                        onTap: () =>
-                            Navigator.pushNamed(context, '/questionnaire'),
-                      ),
-                      DashboardCard(
-                        title: 'Progress',
-                        icon: Icons.bar_chart,
-                        routeName: '/progress',
-                        onTap: () => Navigator.pushNamed(context, '/progress'),
-                      ),
-                      DashboardCard(
-                        title: 'Planner',
-                        icon: Icons.event_note,
-                        routeName: '/planner',
-                        onTap: () => _showPlannerOptions(
-                          context,
-                        ), // Show the popup when tapped
-                      ),
-                      DashboardCard(
-                        title: 'About Student',
-                        icon: Icons.person_rounded,
-                        routeName: '/about_student',
-                        onTap: () =>
-                            Navigator.pushNamed(context, '/about_student'),
-                      ),
-                    ],
+                  Center(
+                    child: Wrap(
+                      spacing: 16,
+                      runSpacing: 16,
+                      children: [
+                        DashboardCard(
+                          title: 'Questions',
+                          icon: Icons.quiz,
+                          routeName: '/questionnaire',
+                          onTap: () =>
+                              Navigator.pushNamed(context, '/questionnaire'),
+                        ),
+                        DashboardCard(
+                          title: 'Progress',
+                          icon: Icons.bar_chart,
+                          routeName: '/progress',
+                          onTap: () =>
+                              Navigator.pushNamed(context, '/progress'),
+                        ),
+                        DashboardCard(
+                          title: 'Planner',
+                          icon: Icons.event_note,
+                          routeName: '/planner',
+                          onTap: () => _showPlannerOptions(
+                            context,
+                          ), // Show the popup when tapped
+                        ),
+                        DashboardCard(
+                          title: 'About Student',
+                          icon: Icons.person_rounded,
+                          routeName: '/about_student',
+                          onTap: () =>
+                              Navigator.pushNamed(context, '/about_student'),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 24),
                   Text('Upcoming Assignments', style: AppTextStyles.heading),

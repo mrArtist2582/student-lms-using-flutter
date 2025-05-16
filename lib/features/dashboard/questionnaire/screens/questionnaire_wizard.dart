@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:student_lms/services/storage_service.dart';
+import 'package:student_lms/main.dart'; // make sure authController is defined here
 import '../../questionnaire/data/question_bank.dart';
 import '../../questionnaire/screens/question_step.dart';
 import 'questionnaire_summary.dart';
@@ -15,16 +15,26 @@ class _QuestionnaireWizardState extends State<QuestionnaireWizard> {
   int currentIndex = 0;
   final List<int> selectedOptions = List.filled(questionBank.length, -1);
 
-  void _next() {
+  void _next() async {
     if (currentIndex == questionBank.length - 1) {
-      // Save answers when at the last question
-      StorageService().saveAnswers(selectedOptions);
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => QuestionnaireSummary(answers: selectedOptions),
-        ),
-      );
+      try {
+        await authController.storageService.saveAnswers(selectedOptions);
+        debugPrint("Answers saved: $selectedOptions");
+
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => QuestionnaireSummary(answers: selectedOptions),
+            ),
+          );
+        }
+      } catch (e) {
+        debugPrint("Error saving answers: $e");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to save answers.")),
+        );
+      }
     } else {
       setState(() {
         currentIndex++;
@@ -45,21 +55,13 @@ class _QuestionnaireWizardState extends State<QuestionnaireWizard> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Questionnaire'),
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: Colors.indigo.shade100,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              questionBank[currentIndex].question,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
             const SizedBox(height: 20),
             QuestionStep(
               currentIndex: currentIndex,
@@ -82,7 +84,7 @@ class _QuestionnaireWizardState extends State<QuestionnaireWizard> {
               ElevatedButton(
                 onPressed: _prev,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueAccent,
+                  backgroundColor: Colors.indigo.shade100,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
